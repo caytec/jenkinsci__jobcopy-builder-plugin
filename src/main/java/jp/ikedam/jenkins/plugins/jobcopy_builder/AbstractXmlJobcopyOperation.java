@@ -33,6 +33,7 @@ import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 
 import javax.annotation.CheckForNull;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -128,7 +129,10 @@ public abstract class AbstractXmlJobcopyOperation extends JobcopyOperation
     private String getXmlString(Document doc)
         throws TransformerException
     {
-        TransformerFactory tfactory = TransformerFactory.newInstance(); 
+        TransformerFactory tfactory = TransformerFactory.newInstance();
+        tfactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        tfactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+        tfactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true); 
         Transformer transformer = tfactory.newTransformer(); 
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         
@@ -153,6 +157,13 @@ public abstract class AbstractXmlJobcopyOperation extends JobcopyOperation
         throws ParserConfigurationException,UnsupportedEncodingException,SAXException,IOException
     {
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        String FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+        try {
+            domFactory.setFeature(FEATURE, true);
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("ParserConfigurationException was thrown. The feature '"
+                    + FEATURE + "' is not supported by your XML processor.", e);
+        }
         //domFactory.setNamespaceAware(true);
         DocumentBuilder builder = domFactory.newDocumentBuilder();
         builder.setErrorHandler(new ErrorHandler(){

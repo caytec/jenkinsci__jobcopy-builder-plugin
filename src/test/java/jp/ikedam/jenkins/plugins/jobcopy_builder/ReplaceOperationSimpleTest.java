@@ -56,6 +56,13 @@ public class ReplaceOperationSimpleTest extends TestCase
             throws ParserConfigurationException,UnsupportedEncodingException,SAXException,IOException
     {
         DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+        String FEATURE = "http://apache.org/xml/features/disallow-doctype-decl";
+        try {
+            domFactory.setFeature(FEATURE, true);
+        } catch (ParserConfigurationException e) {
+            throw new IllegalStateException("ParserConfigurationException was thrown. The feature '"
+                    + FEATURE + "' is not supported by your XML processor.", e);
+        }
         DocumentBuilder builder = domFactory.newDocumentBuilder();
         InputStream is = new ByteArrayInputStream(xmlString.getBytes("UTF-8")); 
         
